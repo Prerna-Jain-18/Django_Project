@@ -1,0 +1,19 @@
+{% extends "first_app/base.html" %}
+{% block body_block %}
+
+<h1 align="center">Add Musician</h1>
+<div class="container" style="margin-top: 20px;">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ musician_form.as_p }}
+        <div class="text-center">
+          <button class="btn btn-success" type="submit">Save</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+{% endblock %}

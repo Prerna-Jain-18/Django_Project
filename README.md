@@ -23,20 +23,20 @@ This is a basic Django project for a music management application that allows us
 
   ```python
  @deconstructible
-class DefaultImageStorage(FileSystemStorage):
-    def _save(self, name, content):
-        if content.size == 0:
-            # Use default image if no image is provided
-            default_image_path = os.path.join(settings.MEDIA_ROOT, 'default_musician.jpg')
-            with open(default_image_path, 'rb') as f:
-                content = ContentFile(f.read())
-        return super()._save(name, content)
+  class DefaultImageStorage(FileSystemStorage):
+      def _save(self, name, content):
+          if content.size == 0:
+              # Use default image if no image is provided
+              default_image_path = os.path.join(settings.MEDIA_ROOT, 'default_musician.jpg')
+              with open(default_image_path, 'rb') as f:
+                  content = ContentFile(f.read())
+          return super()._save(name, content)
 
-class Musician(models.Model):
-    first_name = models.CharField(max_length=50)
-    last_name = models.CharField(max_length=50)
-    instrument = models.CharField(max_length=100)
-    image = models.ImageField(upload_to='musicians/', storage=DefaultImageStorage(), blank=True)
+  class Musician(models.Model):
+      first_name = models.CharField(max_length=50)
+      last_name = models.CharField(max_length=50)
+      instrument = models.CharField(max_length=100)
+      image = models.ImageField(upload_to='musicians/', storage=DefaultImageStorage(), blank=True)
   ```
 
 - **Template Changes:**

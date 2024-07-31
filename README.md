@@ -106,16 +106,97 @@ class Musician(models.Model):
 
 ### **Deployment Instructions**
 
-1. **Package the Application:**
-   - Zip your Django project files and dependencies.
+### 1. **Prepare Your Django Application**
 
-2. **Upload to AWS Lambda:**
-   - Follow AWS Lambda and API Gateway setup instructions to upload and configure your Django application.
+Before deploying your Django application to AWS Lambda, ensure it's ready for serverless deployment:
 
-3. **Configure Environment Variables:**
-   - Set environment variables such as `DJANGO_SETTINGS_MODULE` and `DATABASE_URL` in the AWS Lambda console.
+- **Remove Static Files:** Remove any static files from your application, as Lambda has limited storage.
+- **Use Environment Variables:** Store sensitive data like database credentials in environment variables.
+- **Update Settings:** Configure your Django settings to work with serverless environments, such as using `django-s3-storage` for static files.
 
-4. **Deploy the API:**
-   - Use AWS API Gateway to expose your Lambda function as a web service.
+### 2. **Set Up a Virtual Environment**
 
+Create a virtual environment for your project and install all necessary dependencies:
+
+```bash
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
+
+### 3. **Package Your Application**
+
+Use a tool like **Zappa** to package and deploy your Django application to AWS Lambda. Install Zappa if you haven't already:
+
+```bash
+pip install zappa
+```
+
+### 4. **Configure Zappa**
+
+Initialize Zappa in your Django project directory:
+
+```bash
+zappa init
+```
+
+### 5. **Deploy Your Application**
+
+Deploy your application using Zappa:
+
+```bash
+zappa deploy production
+```
+
+This command packages your Django application and uploads it to AWS Lambda. Zappa will also create an API Gateway endpoint for your application.
+
+### 6. **Set Environment Variables**
+
+Set environment variables in AWS Lambda, including `DJANGO_SETTINGS_MODULE` and any other necessary settings. You can do this in the AWS Lambda console:
+
+1. Go to the AWS Lambda console.
+2. Select your function.
+3. Under the "Configuration" tab, choose "Environment variables."
+4. Add the required variables, such as:
+
+   - `DJANGO_SETTINGS_MODULE`: Your settings module (e.g., `myproject.settings`).
+   - `DATABASE_URL`: Your database connection string.
+
+### 7. **Update Static and Media Files Handling**
+
+Since AWS Lambda doesn't support persistent file storage, you'll need to use a service like Amazon S3 for static and media files. Update your `settings.py`:
+
+```python
+STATICFILES_STORAGE = 'django_s3_storage.storage.StaticS3Storage'
+DEFAULT_FILE_STORAGE = 'django_s3_storage.storage.S3Storage'
+AWS_S3_BUCKET_NAME = 'your-s3-bucket-name'
+```
+
+### 8. **Migrate the Database**
+
+To run Django's database migrations on Lambda, use Zappa:
+
+```bash
+zappa manage production migrate
+```
+
+### 9. **Deploy API with AWS API Gateway**
+
+AWS API Gateway will automatically be set up with Zappa. If you want to customize API Gateway further:
+
+1. Go to the API Gateway console.
+2. Select the API created by Zappa.
+3. Customize routes, methods, and settings as needed.
+
+### 10. **Testing and Maintenance**
+
+- **Test Your Application:** After deployment, thoroughly test your application to ensure it functions correctly in the AWS Lambda environment.
+- **Update and Redeploy:** For updates, use `zappa update production` to redeploy your changes.
+- **Monitoring and Logs:** Use AWS CloudWatch for monitoring and logging. Check the Lambda and API Gateway dashboards for performance and error logs.
+
+### Additional Resources
+
+- [AWS Lambda Documentation](https://docs.aws.amazon.com/lambda/index.html)
+- [AWS API Gateway Documentation](https://docs.aws.amazon.com/apigateway/index.html)
+- [Zappa Documentation](https://github.com/Miserlou/Zappa)
 
